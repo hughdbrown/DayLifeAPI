@@ -5,6 +5,7 @@
 
 class DaylifeAPI(object):
 	auth_keys = ['topic_id','article_id','story_id','image_id','quote_id','source_id','set_id','query','name']
+	verbs = ['search_getRelatedArticles']
 
 	def __init__(self, accesskey, sharedsecret, server='freeapi.daylife.com', version='4.2'):
 		self.accesskey = accesskey
@@ -13,7 +14,7 @@ class DaylifeAPI(object):
 		self.version = version
 
 	def __getattr__(self, name):
-		if not name in ['search_getRelatedArticles']:
+		if not name in verbs:
 			raise AttributeError, name
 		else:
 			def caller(**params):
