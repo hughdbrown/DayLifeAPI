@@ -1,10 +1,9 @@
 from urllib import urlencode, quote
 from urllib2 import urlopen
 import md5, types
-#import cjson
 import simplejson
 
-class DaylifeAPI:
+class DaylifeAPI(object):
 
 	auth_keys = ['topic_id',
 				 'article_id',
@@ -29,7 +28,7 @@ class DaylifeAPI:
 		else:
 			def caller(**params):
 				url = self.construct_api_url(name, params)
-				print url
+				#print url
 				return self.call_url(url)
 			return caller
 			
@@ -39,55 +38,35 @@ class DaylifeAPI:
 		if not auth_value:
 			raise ValueError("No core input could be identified")
 		params['signature'] = self.calc_signature(auth_value)
-		url = 'http://' \
-					+ str(self.server) \
-					+ '/jsonrest/publicapi/' \
-					+ str(self.version) \
-					+ '/' + method_name \
-					+ '?' \
-					+ self.build_query_string(params)
-		return url
+		return 'http://%s/jsonrest/publicapi/%s/%s?%s' % (self.server, self.version, method_name, self.build_query_string(params))
 
 	def build_query_string(self, params):
-		qlist = []
-		for k,v in params.iteritems():
-			if type(v) is types.ListType:
-				# list of ids
-				qlist.extend( ['%s=%s'%(k,quote(str(x))) for x in v] )
-			else:
-				# keys don't need quoting
-				qlist.append('%s=%s'%(k,quote(str(v))))    
-		return '&'.join(qlist)
+		iter = params.iteritems
+		items = [(k,x) for k,v in iter() if type(v) is types.ListType for x in v] + \
+				[(k,v) for k,v in iter() if not (type(v) is types.ListType)]
+		return '&'.join('%s=%s'%(k,quote(str(v))) for k, v in items)
 
 	def call_url(self, url):
-		print str(url)
+		#print str(url)
 		x = urlopen(url)
-		#return cjson.decode(x.read())
 		js = simplejson.JSONDecoder()
-		return js.decode(x.read())
-		
+		return js.decode(x.read().decode("iso-8859-1"))
 
 	def calc_signature(self, query):
 		m = md5.new()
-		m.update(self.accesskey)
-		m.update(self.sharedsecret)
-		m.update(query)
+		m.update(self.accesskey + self.sharedsecret + query)
 		return m.hexdigest()
 
 	def parse_auth_key(self, params):
-		for x in self.auth_keys:
-			if x in params:
-				value = params[x]
-				if type(value) is types.ListType:
-					value = params[x]
-					if type(value) is types.ListType:
-						value = ''.join(str(x) for x in sorted(value))
-				print value
-				return (x, value)
-				print value
-				return (x, value)
-		return (None,None)
-
+		keys = [x for x in self.auth_keys if x in params]
+		if len(keys):
+			value = params[keys[0]]
+			if type(value) is types.ListType:
+				value = ''.join(str(x) for x in sorted(value))
+			print value
+			return (x, value)
+		else:
+			return (None,None)
 
 def test_daylifeapi():
 	import time
@@ -96,7 +75,7 @@ def test_daylifeapi():
 					 "2e548ef751397c653752057adcff0c9f",
 					 "freeapi.daylife.com")
 
-	#getting articles related to jeses in the last 7 days sorted by date
+	#getting articles related to jesus in the last 7 days sorted by date
 	ret = api.search_getRelatedArticles(query='jesus',
 										start_time=long(time.time() - (7*86400)),
 										end_time=long(time.time()),
