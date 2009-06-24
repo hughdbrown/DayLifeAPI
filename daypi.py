@@ -79,12 +79,11 @@ class DaylifeAPI:
 			if x in params:
 				value = params[x]
 				if type(value) is types.ListType:
-					value = value[:]
-					value.sort()
-					value_str = ''
-					for x in value:
-						value_str = value_str + str(x)
-					value = value_str
+					value = params[x]
+					if type(value) is types.ListType:
+						value = ''.join(str(x) for x in sorted(value))
+				print value
+				return (x, value)
 				print value
 				return (x, value)
 		return (None,None)
