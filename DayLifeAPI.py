@@ -5,7 +5,11 @@
 
 class DaylifeAPI(object):
 	auth_keys = ['topic_id','article_id','story_id','image_id','quote_id','source_id','set_id','query','name']
-	verbs = ['search_getRelatedArticles']
+	verbs = ['source_getTopics', 'source_getInfo', 'source_getImage', 'source_getArticles',
+		'topic_getInfo', 'topic_getTimeLine', 'topic_getRelatedTopics', 'topic_getRelatedStories', 'topic_getRelatedQuotes', 'topic_getRelatedImages', 'topic_getRelatedArticles',
+		'search_getRelatedTopics', 'search_getRelatedQuotes','search_getRelatedImages','search_getRelatedArticles', 'search_getQuotesBy','search_getQuotesAbout','search_getMatchingTopics','search_getMatchingSources','search_getCounts',
+		'quote_getRelatedTopics', 'quote_getRelatedQuotes', 'quote_getRelatedArticles', 'quote_getInfo',
+		'article_getRelatedTopics', 'article_getRelatedQuotes', 'article_getRelatedImages', 'article_getRelatedArticles', 'article_getInfo',]
 
 	def __init__(self, accesskey, sharedsecret, server='freeapi.daylife.com', version='4.2'):
 		self.accesskey = accesskey
@@ -14,7 +18,7 @@ class DaylifeAPI(object):
 		self.version = version
 
 	def __getattr__(self, name):
-		if not name in verbs:
+		if not name in DaylifeAPI.verbs:
 			raise AttributeError, name
 		else:
 			def caller(**params):
