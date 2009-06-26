@@ -11,7 +11,7 @@ class DaylifeAPI(object):
 		'quote_getRelatedTopics', 'quote_getRelatedQuotes', 'quote_getRelatedArticles', 'quote_getInfo',
 		'article_getRelatedTopics', 'article_getRelatedQuotes', 'article_getRelatedImages', 'article_getRelatedArticles', 'article_getInfo',]
 
-	def __init__(self, accesskey, sharedsecret, server='freeapi.daylife.com', version='4.2'):
+	def __init__(self, accesskey, sharedsecret, server='freeapi.daylife.com', version='4.4'):
 		self.accesskey = accesskey
 		self.sharedsecret = sharedsecret
 		self.server = server
